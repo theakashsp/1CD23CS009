@@ -164,3 +164,7 @@ The system can be scaled horizontally by adding more backend servers and more wo
 
 ### 10. Summary
 This design improves reliability, fault tolerance, and scalability. It helps notifications be delivered safely, recover from failures, and handle more traffic as the system grows.
+
+## Stage 6
+
+The Top N notifications are maintained by fetching unread notifications, assigning each one a priority, sorting them by priority and createdAt, and keeping only the first N results. This approach is efficient because it does not need a heavy data structure and works well for a small to medium number of notifications. The time complexity is about O(m log m) for sorting m notifications, which is simple and practical for this assignment.
