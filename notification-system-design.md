@@ -1,13 +1,63 @@
 # Notification System Design
 
-## Stage 1
-
 ## Stage 2
 
-## Stage 3
+### 1. Database Selection
+PostgreSQL is a good choice for this system because it is reliable, supports structured data well, and works smoothly with Node.js applications. It also gives strong support for relationships, indexing, and data integrity.
 
-## Stage 4
+### 2. Database Schema
 
-## Stage 5
+#### students
+| Column | Data Type | Key | Description |
+|---|---|---|---|
+| id | UUID | Primary Key | Unique student ID |
+| student_id | VARCHAR(50) | Unique | Student number from the campus system |
+| full_name | VARCHAR(100) |  | Student full name |
+| email | VARCHAR(150) |  | Student email address |
+| created_at | TIMESTAMP |  | Account creation time |
 
-## Stage 6
+#### notifications
+| Column | Data Type | Key | Description |
+|---|---|---|---|
+| id | UUID | Primary Key | Unique notification ID |
+| student_id | UUID | Foreign Key | Reference to students.id |
+| notification_type | VARCHAR(50) |  | Type of notification |
+| title | VARCHAR(150) |  | Notification title |
+| message | TEXT |  | Notification content |
+| is_read | BOOLEAN |  | Read status |
+| created_at | TIMESTAMP |  | Notification creation time |
+
+### 3. Relationship
+One student can have many notifications. That means the students table is the parent table and the notifications table is the child table.
+
+### 4. SQL Schema
+```sql
+CREATE TABLE students (
+  id UUID PRIMARY KEY,
+  student_id VARCHAR(50) UNIQUE NOT NULL,
+  full_name VARCHAR(100) NOT NULL,
+  email VARCHAR(150) NOT NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE notifications (
+  id UUID PRIMARY KEY,
+  student_id UUID NOT NULL,
+  notification_type VARCHAR(50) NOT NULL,
+  title VARCHAR(150) NOT NULL,
+  message TEXT NOT NULL,
+  is_read BOOLEAN DEFAULT FALSE,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  CONSTRAINT fk_notifications_students
+    FOREIGN KEY (student_id) REFERENCES students(id)
+);
+```
+
+### 5. Indexing
+Indexes should be added on student_id, is_read, notification_type, and created_at. These indexes help the database find records faster, especially when loading notifications for one student or filtering unread messages.
+
+### 6. Scalability
+If the system grows to millions of notifications, PostgreSQL can still handle it with good planning. Indexing helps with fast searches, pagination helps load data in smaller parts, partitioning can split old and new records, and archiving old notifications reduces the size of active tables. Read replicas can help with read-heavy traffic, and Redis caching can improve unread count lookups.
+
+### 7. API Interaction
+The POST API inserts a new notification record into the notifications table. The GET API reads notifications from the database for a specific student. The PATCH API updates the is_read field for one notification or for all notifications of a student. The DELETE API removes a notification record when it is no longer needed.
