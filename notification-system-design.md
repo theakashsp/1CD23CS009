@@ -132,3 +132,35 @@ Database tools like EXPLAIN can be used to check how a query is executed. This h
 
 ### 9. Summary
 These techniques help the system stay fast and scalable as the number of users and notifications grows. Better fetching methods, caching, pagination, indexing, and archiving all work together to keep performance strong.
+
+## Stage 5
+
+### 1. Introduction
+A notification system should be reliable and scalable because students and staff may receive important updates at any time. If the sending process fails, people may miss important information, so the system needs to handle load and failures carefully.
+
+### 2. Simple Architecture
+A simple design can include a client, a backend API, a message queue such as RabbitMQ or Kafka, a notification worker, a database, and a WebSocket server. The client sends an action to the backend, the backend puts the task into the queue, and the worker handles the actual delivery and storage.
+
+### 3. Request Flow
+When a user performs an action, the backend creates a notification. That notification is then added to the message queue. A worker reads the message, saves the notification in the database, and delivers it to the user through WebSocket or push notification.
+
+### 4. Why Use a Message Queue
+A message queue is better than sending notifications directly because it helps the system handle traffic smoothly. If the worker is busy or the database is slow, the queue keeps the messages safe until they can be processed.
+
+### 5. Retry Mechanism
+Retry mechanisms help when delivery fails. If a worker crashes or a network problem happens, the message can be retried later instead of being lost.
+
+### 6. Multiple Worker Instances
+Running multiple worker instances improves scalability because several notifications can be processed at the same time. This helps the system handle more users and more requests without slowing down.
+
+### 7. Preventing Duplicate Notifications
+Duplicate notifications can be prevented by giving each notification a unique ID. The worker can check whether that ID already exists before saving or sending it again.
+
+### 8. Monitoring and Logging
+Monitoring and logging help identify failures quickly. If a message fails repeatedly or a worker stops working, the team can find the issue and fix it faster.
+
+### 9. Horizontal Scaling
+The system can be scaled horizontally by adding more backend servers and more workers. This allows the system to grow as the number of users increases.
+
+### 10. Summary
+This design improves reliability, fault tolerance, and scalability. It helps notifications be delivered safely, recover from failures, and handle more traffic as the system grows.
