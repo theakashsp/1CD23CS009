@@ -103,3 +103,32 @@ Pagination should be used when loading notifications page by page. It helps the 
 
 ### 10. Summary
 These optimizations help reduce query execution time and make the system more scalable. With proper indexing, pagination, and smaller result sets, the database can handle more users and more notifications without slowing down too much.
+
+## Stage 4
+
+### 1. Introduction
+Notification retrieval should be optimized because users expect their inbox to load fast. If the system fetches too much data at once, the response becomes slow and the database gets more load.
+
+### 2. Performance Techniques
+Pagination can be used with LIMIT and OFFSET to load a small number of notifications per request. Cursor-based pagination is even better for large datasets because it is more stable when new items are added. Only the needed columns should be selected instead of using SELECT *. Proper database indexing also helps the server find unread notifications faster. Redis can be used to cache unread counts and frequently accessed notifications, and lazy loading can be used to load older notifications only when needed.
+
+### 3. Why Caching Helps
+Caching reduces database load because repeated requests can be answered from memory instead of querying the database every time. This makes the system faster and reduces pressure on the database.
+
+### 4. Why Pagination Helps
+Pagination improves response time because the server returns only a small part of the data at once. It also reduces memory usage on both the server and the client.
+
+### 5. Why Indexes Help
+Indexes help fetch unread notifications faster by allowing the database to find matching rows more quickly. This is especially useful when filters like is_read and sorting by created_at are involved.
+
+### 6. Sorting by Time
+Notifications are usually shown from the newest to the oldest. Sorting by created_at in descending order makes the inbox more useful and helps the database return the most recent updates first.
+
+### 7. Archiving Old Notifications
+Old notifications can be archived to another table or storage area so the main notification table stays smaller. This helps queries run faster and keeps the system more organized.
+
+### 8. Monitoring Performance
+Database tools like EXPLAIN can be used to check how a query is executed. This helps find slow parts of the query and improve them before the system gets too large.
+
+### 9. Summary
+These techniques help the system stay fast and scalable as the number of users and notifications grows. Better fetching methods, caching, pagination, indexing, and archiving all work together to keep performance strong.
